@@ -18,15 +18,17 @@ def index():
         out_dir = os.path.join(REPORTS, uid)
         os.makedirs(out_dir)
 
-        # MobSF (basic static scan)
+        # 1. Mount Docker socket so container can spawn MobSF container
+        # 2. Use absolute path inside container
         subprocess.run([
-    "docker", "run", "--rm",
-    "-v", f"{os.getcwd()}:/workspace",
-    "opensecurity/mobsf:latest",
-    "python3", "/home/mobsf/Mobile-Security-Framework-MobSF/manage.py", "scan",
-    "--file", f"/workspace/{os.path.basename(apk_path)}",
-    "--output", f"/workspace/{uid}"
-])
+            "docker", "run", "--rm",
+            "-v", "/var/run/docker.sock:/var/run/docker.sock",   # Docker socket
+            "-v", f"{os.getcwd()}:/workspace",                  # Host files
+            "opensecurity/mobsf:latest",
+            "python3", "/home/mobsf/Mobile-Security-Framework-MobSF/manage.py", "scan",
+            "--file", f"/workspace/{os.path.basename(apk_path)}",
+            "--output", f"/workspace/{uid}"
+        ])
 
         shutil.make_archive(out_dir, 'zip', out_dir)
         return send_file(f"{out_dir}.zip", as_attachment=True)
