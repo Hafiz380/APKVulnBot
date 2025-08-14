@@ -26,7 +26,7 @@ def index():
     "python3", "/home/mobsf/Mobile-Security-Framework-MobSF/manage.py", "scan",
     "--file", f"/workspace/{os.path.basename(apk_path)}",
     "--output", f"/workspace/{uid}"
-]))
+])
 
         shutil.make_archive(out_dir, 'zip', out_dir)
         return send_file(f"{out_dir}.zip", as_attachment=True)
