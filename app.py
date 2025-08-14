@@ -19,9 +19,14 @@ def index():
         os.makedirs(out_dir)
 
         # MobSF (basic static scan)
-        subprocess.run(["docker", "run", "--rm", "-v", f"{os.getcwd()}:/data",
-                        "opensecurity/mobsf", "python3", "/opt/MobSF/run.py",
-                        "-s", apk_path], cwd=out_dir)
+        subprocess.run([
+    "docker", "run", "--rm",
+    "-v", f"{os.getcwd()}:/workspace",
+    "opensecurity/mobsf:latest",
+    "python3", "/home/mobsf/Mobile-Security-Framework-MobSF/manage.py", "scan",
+    "--file", f"/workspace/{os.path.basename(apk_path)}",
+    "--output", f"/workspace/{uid}"
+]))
 
         shutil.make_archive(out_dir, 'zip', out_dir)
         return send_file(f"{out_dir}.zip", as_attachment=True)
